@@ -1,54 +1,73 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
+#!usr/bin/python
+# tic tac toe AI demo
+# jose berengueres
 
-# C extensions
-*.so
+# FLOW CHART
+# board state as a list of numbers. odd is human, even number is PC. number is move index
+# 1. display board
 
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
+import random
+names = ["YOU", "CPU"]
+move_history = []
+allowed = [0,1,2,3,4,5,6,7,8]
+board_skin = "   |   |   \n ---------\n   |   |   \n ---------\n   |   |   \n"
+bs = list(board_skin)
+symbol = list("xo")
+where_to_display = [1,5,9,1+23,5+23,9+23,1+46,5+46,9+46]
+victory = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+def disp_board():
+   for i, cell_id in enumerate(move_history):
+      bs[where_to_display[cell_id]]= symbol[i%2]     
+   print(''.join(bs))
+   
+def ask_player():
+   while(True):
+      c = raw_input('make a move [0-8]:')
+      c = int(c)
+      if (legal_move(c)):
+         move_history.append(c)
+         return c
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+def legal_move(c): 
+   if (c in allowed and not c in move_history):
+       return True
+   return False
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
+def victory_check(player_id):
 
-# Translations
-*.mo
-*.pot
+   for v in victory:
+      if ( len( set(v).intersection( set(move_history[player_id::2]))) == 3 ):
+         s = "\n*** The Winner is... " + names[player_id] + "\n\n\n"
+         print(s)
+         quit()
+   if (len(list(set(allowed)-set(move_history))) ==0):
+      print("\n *** even match ***")
+      quit()
 
-# Django stuff:
-*.log
+def ask_cpu():
 
-# Sphinx documentation
-docs/_build/
+   intersect = set(allowed) - set(move_history) 
+   l = list (intersect)
+   c = random.choice(l)
+   print ("cpu moves to...")
+   print (c)
+   move_history.append(c)
 
-# PyBuilder
-target/
+def main():
+
+   print("\n\n\n  TIC TAC TOE DEATH GAME  \n")
+
+   while(True):
+      disp_board()
+
+      ask_player() 
+      victory_check(0)
+
+      ask_cpu()
+      victory_check(1)
+   
+
+if __name__ == "__main__":
+    main()
+
